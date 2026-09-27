@@ -1,0 +1,63 @@
+version: '3.8'
+
+# ==========================================================
+# SAE51 - Dolibarr dockerise (Dolibarr + MariaDB separes)
+# ==========================================================
+# Lancement : docker compose up -d
+# Acces web : http://localhost:8080
+# Arret     : docker compose down
+# Arret + suppression des donnees : docker compose down -v
+# ==========================================================
+
+services:
+
+  db:
+    image: mariadb:11
+    container_name: dolibarr_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - dolibarr_net
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dolibarr:
+    image: dolibarr/dolibarr:latest
+    container_name: dolibarr_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      DOLI_DB_HOST: db
+      DOLI_DB_NAME: ${DB_NAME}
+      DOLI_DB_USER: ${DB_USER}
+      DOLI_DB_PASSWORD: ${DB_PASSWORD}
+      DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}
+      DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD}
+      DOLI_URL_ROOT: http://localhost:8080
+    volumes:
+      - dolibarr_documents:/var/www/documents
+      - dolibarr_html:/var/www/html
+    networks:
+      - dolibarr_net
+
+volumes:
+  db_data:
+  dolibarr_documents:
+  dolibarr_html:
+
+networks:
+  dolibarr_net:
+    driver: bridge

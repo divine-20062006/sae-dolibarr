@@ -1,0 +1,6 @@
+# Ne jamais committer les fichiers contenant des mots de passe reels
+.env
+
+# Fichiers temporaires
+*.log
+*.tmp
