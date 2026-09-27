@@ -1,0 +1,9 @@
+Nom;Nom_alias;Adresse;Code_postal;Ville;Pays;Telephone;Email;Client;Fournisseur
+Dupont Menuiserie;Dupont Menuiserie SARL;12 rue des Artisans;76000;Rouen;FR;0235123456;contact@dupont-menuiserie.fr;1;0
+Lefevre Informatique;Lefevre Info;5 avenue du Commerce;76100;Rouen;FR;0235654321;info@lefevre-info.fr;1;0
+Martin Fournitures;Martin Fournitures Pro;8 boulevard Industriel;76600;Le Havre;FR;0232112233;contact@martin-fournitures.fr;0;1
+Girard Electricite;Girard Elec;22 rue de la Republique;76300;Sotteville-les-Rouen;FR;0235998877;contact@girard-elec.fr;1;0
+Petit Transport;Petit Transport Logistique;3 rue de la Gare;76500;Elbeuf;FR;0232445566;contact@petit-transport.fr;0;1
+Roussel Batiment;Roussel BTP;17 rue des Chantiers;76140;Le Petit-Quevilly;FR;0235887766;contact@roussel-btp.fr;1;1
+Fontaine Papeterie;Fontaine Papeterie SAS;9 place du Marche;76000;Rouen;FR;0235223344;contact@fontaine-papeterie.fr;1;0
+Bernard Metallerie;Bernard Metal;41 rue de l'Industrie;76120;Le Grand-Quevilly;FR;0232778899;contact@bernard-metal.fr;0;1
