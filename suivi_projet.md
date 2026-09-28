@@ -46,3 +46,17 @@
 - Continuer la documentation dans docs/
 - Binôme : à faire monter en compétence sur Docker (docker-compose.yml et
   install.sh sont sur Git, prêts à être réutilisés)
+
+## Séance du 28/09/2026
+
+**Fait :**
+- Création de backup.sh : dump SQL (mariadb-dump) + archive des volumes Dolibarr (documents + conf.php)
+- Création de restore.sh : suppression complète de la stack, reconstruction depuis une sauvegarde
+- Test PRA validé : tiers "Client PRA" créé, sauvegarde, tiers "Apres sauvegarde" créé,
+  restauration complète -> "Client PRA" présent, "Apres sauvegarde" absent
+- backups/ ajouté au .gitignore (données réelles, ne pas versionner)
+
+**À faire :**
+- Adapter import_csv.sh à la base Docker (elle pointe pour l'instant sur MariaDB en local)
+- Compléter la documentation dans docs/ et le readme.md (procédure d'installation pour le binôme)
+- Tester la procédure complète depuis zéro sur une VM vierge (git clone, .env, install.sh, restore.sh)
