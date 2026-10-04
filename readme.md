@@ -60,4 +60,4 @@ Le test PRA a été validé : un tiers créé avant la sauvegarde est présent a
 
 - [suivi_projet.md](suivi_projet.md) : journal de bord
 - [sources.md](sources.md) : sources consultées
-- [docs/](docs/) : documentation détaillée
+- [docs/etude_choix_techniques.md](docs/etude_choix_techniques.md) : justification des choix techniques
