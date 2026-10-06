@@ -75,6 +75,12 @@
   -> "Test Mervedi 1" présent, "Test Mervedi 2" absent, 9 tiers au total
 - La restauration récupère aussi la configuration (module Fournisseurs toujours actif)
 
+Captures :
+
+![Liste des tiers après import : 5 visibles sur 8, avant activation du module Fournisseurs](docs/captures/liste_tiers_import.png)
+![Fiche Dupont Menuiserie](docs/captures/fiche_dupont.png)
+![Clients après restauration PRA](docs/captures/pra_clients_restaures.png)
+
 **Anomalies constatées :**
 - Les tiers uniquement fournisseurs (Martin Fournitures, Petit Transport, Bernard Metallerie)
   sont bien en base mais invisibles dans l'interface : le module Fournisseurs n'est pas activé
