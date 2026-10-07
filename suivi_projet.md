@@ -60,3 +60,38 @@
 - Adapter import_csv.sh à la base Docker (elle pointe pour l'instant sur MariaDB en local)
 - Compléter la documentation dans docs/ et le readme.md (procédure d'installation pour le binôme)
 - Tester la procédure complète depuis zéro sur une VM vierge (git clone, .env, install.sh, restore.sh)
+
+## Séance du 06/10/2026
+
+**Fait :**
+- Test complet du projet sur une machine vierge (laptop Ubuntu 24.04, sans Docker au départ),
+  en suivant la procédure de test rédigée par Divine
+- Installation de Docker via le script officiel (get.docker.com), clone du dépôt, création du .env
+- `install.sh` : installation réussie, Dolibarr 24.0.1 accessible sur http://localhost:8080
+- Menu Tiers présent sans action manuelle, pays France configuré
+- `import_csv.sh` : 8/8 lignes insérées, 0 erreur ; pays correctement converti (France)
+- Second lancement de l'import : aucun doublon créé (vérifié en base)
+- Test PRA validé : "Test Mervedi 1" créé, sauvegarde, "Test Mervedi 2" créé, restauration
+  -> "Test Mervedi 1" présent, "Test Mervedi 2" absent, 9 tiers au total
+- La restauration récupère aussi la configuration (module Fournisseurs toujours actif)
+
+
+
+**Anomalies constatées :**
+- Les tiers uniquement fournisseurs (Martin Fournitures, Petit Transport, Bernard Metallerie)
+  sont bien en base mais invisibles dans l'interface : le module Fournisseurs n'est pas activé
+  au démarrage. Activé à la main pendant le test, les 8 tiers sont alors visibles.
+- `DOLIBARR_VERSION=latest` : le test a installé la 24.0.1 alors que la version testée
+  précédemment était la 24.0.0. Deux installations à quelques jours d'écart n'ont pas la même
+  version, ce qui pose problème pour une restauration.
+- `files.tgz` fait 80 Mo (contre 816 Ko pour la base) : le volume dolibarr_html archive tout
+  le code de Dolibarr. Le fichier appartient à root (créé depuis un conteneur).
+- Les tiers importés par script n'ont pas de code client, contrairement à ceux créés via
+  l'interface (CU2610-00001) : limite connue de l'import SQL direct.
+- Avertissement Docker Compose : attribut `version` obsolète dans docker-compose.yml.
+
+**À faire :**
+- Ajouter le module Fournisseurs au Dockerfile : `DOLI_ENABLE_MODULES=Societe,Fournisseur`
+- Figer la version dans .env.example : `DOLIBARR_VERSION=24.0.1`
+- Retirer la ligne `version: '3.8'` du docker-compose.yml
+- Étudier la réduction de la sauvegarde aux seuls fichiers utiles (documents + conf.php)
