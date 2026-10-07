@@ -32,7 +32,7 @@ if [ ! -f .env ]; then
 fi
 
 echo "--- Lancement des conteneurs (MariaDB + Dolibarr) ---"
-docker compose up -d --build
+docker compose up -d
 
 echo "--- Attente que Dolibarr soit pret (peut prendre 1-2 minutes au premier lancement) ---"
 sleep 5
