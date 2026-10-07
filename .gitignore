@@ -5,3 +5,4 @@
 *.log
 *.tmp
 backups/
+data/export_*.csv
