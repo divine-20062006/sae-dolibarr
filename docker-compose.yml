@@ -1,62 +1,60 @@
+# docker-compose.yml - stack Dolibarr + MariaDB (deux conteneurs separes)
+# Lancer : docker compose up -d --build     Acces : http://localhost:8080
+# Arreter : docker compose down             Tout supprimer (donnees comprises) : docker compose down -v
 
-# ==========================================================
-# SAE51 - Dolibarr dockerise (Dolibarr + MariaDB separes)
-# ==========================================================
-# Lancement : docker compose up -d
-# Acces web : http://localhost:8080
-# Arret     : docker compose down
-# Arret + suppression des donnees : docker compose down -v
-# ==========================================================
+services:  # liste des conteneurs
 
-services:
-
-  db:
-    image: mariadb:11
-    container_name: dolibarr_db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+  db:  # conteneur de la base de donnees
+    image: mariadb:11                # image officielle MariaDB, version majeure 11
+    container_name: dolibarr_db      # nom fixe (utilise par les scripts backup/import)
+    restart: unless-stopped          # redemarre automatiquement, sauf arret volontaire
+    environment:                     # variables lues par l'image au premier demarrage
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}  # mot de passe root (valeur prise dans le fichier .env)
+      MYSQL_DATABASE: ${DB_NAME}                # base creee automatiquement
+      MYSQL_USER: ${DB_USER}                    # utilisateur dedie a Dolibarr
+      MYSQL_PASSWORD: ${DB_PASSWORD}            # son mot de passe
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/mysql       # volume persistant : les donnees survivent a la suppression du conteneur
     networks:
-      - dolibarr_net
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - dolibarr_net                 # reseau prive partage avec le conteneur Dolibarr
+    healthcheck:                     # test de sante : permet de savoir quand la base est vraiment prete
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]  # script fourni par l'image MariaDB
+      interval: 10s                  # un test toutes les 10 secondes
+      timeout: 5s                    # un test echoue s'il dure plus de 5 secondes
+      retries: 5                     # 5 echecs d'affilee = conteneur "unhealthy"
 
-  dolibarr:
-    image: dolibarr/dolibarr:latest
-    container_name: dolibarr_app
+  dolibarr:  # conteneur de l'application
+    build:                           # construit l'image depuis notre Dockerfile
+      context: ./docker/dolibarr     # dossier contenant le Dockerfile
+      args:
+        DOLIBARR_VERSION: ${DOLIBARR_VERSION:-latest}  # version de base, "latest" si absente du .env
+    image: sae-dolibarr:local        # nom donne a l'image construite
+    container_name: dolibarr_app     # nom fixe (utilise par les scripts backup/restore)
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy   # ne demarre qu'une fois la base "healthy"
     ports:
-      - "8080:80"
-    environment:
-      DOLI_DB_HOST: db
+      - "8080:80"                    # port 8080 de la machine -> port 80 du conteneur
+    environment:                     # configuration lue par l'image Dolibarr
+      DOLI_DB_HOST: db               # la base est joignable sous le nom "db" (nom du service)
       DOLI_DB_NAME: ${DB_NAME}
       DOLI_DB_USER: ${DB_USER}
       DOLI_DB_PASSWORD: ${DB_PASSWORD}
-      DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}
+      DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}        # compte administrateur cree au premier demarrage
       DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD}
-      DOLI_URL_ROOT: http://localhost:8080
+      DOLI_URL_ROOT: http://localhost:8080         # adresse publique de Dolibarr
     volumes:
-      - dolibarr_documents:/var/www/documents
-      - dolibarr_html:/var/www/html
+      - dolibarr_documents:/var/www/documents      # documents generes par Dolibarr
+      - dolibarr_html:/var/www/html                # code et configuration (conf.php)
     networks:
       - dolibarr_net
 
-volumes:
+volumes:  # declaration des volumes persistants
   db_data:
   dolibarr_documents:
   dolibarr_html:
 
-networks:
+networks:  # declaration du reseau prive entre les deux conteneurs
   dolibarr_net:
     driver: bridge
